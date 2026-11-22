@@ -1,0 +1,18 @@
+# Servidor local da Telegram Bot API em container, só em 127.0.0.1:8081.
+# /etc/kindle-bot/botapi.env: TELEGRAM_API_ID=... e TELEGRAM_API_HASH=...
+[Unit]
+Description=Telegram Bot API local (kindle-telegram-bot)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStartPre=-/usr/bin/docker rm -f kindle-botapi
+ExecStart=/usr/bin/docker run --rm --name kindle-botapi -p 127.0.0.1:8081:8081 \
+  --env-file /etc/kindle-bot/botapi.env -e TELEGRAM_LOCAL=1 \
+  -v /var/lib/kindle-bot/botapi:/var/lib/telegram-bot-api aiogram/telegram-bot-api:latest
+ExecStop=/usr/bin/docker stop kindle-botapi
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

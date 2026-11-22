@@ -1,0 +1,16 @@
+# O bot. Código em /opt/kindle-telegram-bot, configuração em /etc/kindle-bot/kindle.env com
+# BOT_API_DIR_LOCAL=/var/lib/kindle-bot/botapi e DATA_DIR=/var/lib/kindle-bot.
+# Roda como root para poder mover os arquivos que o servidor da Bot API grava.
+[Unit]
+Description=kindle-telegram-bot
+After=kindle-botapi.service
+Wants=kindle-botapi.service
+
+[Service]
+Environment=KINDLE_BOT_ENV=/etc/kindle-bot/kindle.env
+ExecStart=/usr/bin/python3 -u /opt/kindle-telegram-bot/kindle_bot.py
+Restart=always
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target
