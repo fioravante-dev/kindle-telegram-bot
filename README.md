@@ -1,7 +1,7 @@
 # kindle-telegram-bot
 
 Um bot do Telegram que entrega livros no Kindle. Você manda o arquivo (ou um link) no chat; o bot
-converte se precisar e envia para o e-mail **Send to Kindle** de quem mandou. Várias pessoas podem usar o
+converte (ou ajusta o PDF à tela) se precisar e envia para o e-mail **Send to Kindle** de quem mandou. Várias pessoas podem usar o
 mesmo bot (cada uma com o seu Kindle); o dono aprova quem entra.
 
 - **Formatos:** EPUB, PDF, DOCX, TXT, RTF, HTML e imagens vão direto (a Amazon aceita). MOBI, AZW3, FB2,
@@ -9,8 +9,13 @@ mesmo bot (cada uma com o seu Kindle); o dono aprova quem entra.
 - **Arquivos grandes:** com o servidor local da Bot API, o Telegram aceita até 2 GB. O limite é o e-mail
   (Gmail: 25 MB por mensagem, ~17 MB de anexo), então o bot reduz PDFs (Ghostscript) e, se ainda não couber,
   divide em partes (qpdf); recomprime imagens de EPUBs e divide HQs (CBZ) em partes.
+- **PDF no tamanho da tela:** PDF em A4/carta fica minúsculo no Kindle. O bot analisa cada PDF e, se valer a
+  pena, manda uma **prévia** (a mesma página sem ajuste e ajustada) com os botões *Ajustar*, *Mandar como está*
+  e *Sempre ajustar*. O ajuste separa as colunas, corta as margens e divide em páginas do formato da tela,
+  sempre entre linhas; o recorte é vetorial, então o texto continua nítido. Funciona com PDF escaneado.
+  Cada pessoa escolhe o padrão com `/pdf perguntar | ajustar | original`.
 - **Legenda do arquivo:** `epub` força a conversão para EPUB (bom para PDF de texto); `converter` manda um
-  PDF com o assunto "Convert", e a Amazon reflui o texto.
+  PDF com o assunto "Convert", e a Amazon reflui o texto; `ajustar`/`original` decide o PDF sem perguntar.
 - **Links:** colar um link direto para um arquivo funciona igual a mandar o arquivo.
 
 > 🤖 Quer que um agente de IA (Claude Code, Codex etc.) faça o setup por você? Mande ele seguir
@@ -56,7 +61,7 @@ usar um servidor local. Para voltar à nuvem um dia, chame `logOut` no servidor 
 ## Instalação sem Docker
 
 ```sh
-sudo apt install calibre ghostscript qpdf python3-pil   # Debian/Ubuntu
+sudo apt install calibre ghostscript qpdf python3-pil python3-pymupdf   # Debian/Ubuntu
 cp .env.example .env && $EDITOR .env
 ```
 
@@ -85,7 +90,7 @@ python3 kindle_bot.py
 3. **Cada pessoa, no Telegram:** abre `https://t.me/<seu_bot>`, manda `/start` (o dono recebe
    **Aprovar/Recusar**), depois `/kindle algo@kindle.com`, e manda um livro como arquivo.
 
-Comandos: `/kindle`, `/eu`, `/ajuda`. Só o dono: `/usuarios`, `/remover <id>`.
+Comandos: `/kindle`, `/pdf`, `/eu`, `/ajuda`. Só o dono: `/usuarios`, `/remover <id>`.
 
 ## Configuração
 
@@ -105,6 +110,9 @@ Tudo por variáveis de ambiente, ou um arquivo `.env` no diretório atual, ou um
 | `DATA_DIR` | `./data` | `users.json` e temporários |
 | `OUTPUT_PROFILE` | `kindle_pw3` | perfil de saída do Calibre |
 | `COMIC_COLOR` | `0` | `1` mantém HQs coloridas (Kindle Colorsoft) |
+| `PDF_MODE` | `ask` | padrão para PDFs: `ask` (prévia e pergunta), `auto` (ajusta sempre), `original` |
+| `SCREEN_ASPECT` | `0.75` | largura/altura da tela, para o ajuste de PDF |
+| `PENDING_HOURS` | `12` | quanto tempo a pergunta do PDF espera resposta |
 
 ## Problemas comuns
 

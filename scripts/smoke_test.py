@@ -39,7 +39,20 @@ with zipfile.ZipFile(src / "hq.cbz", "w", zipfile.ZIP_STORED) as z:
 pages = [noise(1000, 1400) for _ in range(6)]
 pages[0].save(src / "grande.pdf", save_all=True, append_images=pages[1:], quality=95)
 
-failed = False
+# PDF A4 em duas colunas, para o ajuste à tela
+import pymupdf  # noqa: E402
+a4 = pymupdf.open()
+for _ in range(2):
+    pg = a4.new_page(width=595, height=842)
+    for x in (40, 310):
+        pg.insert_textbox(pymupdf.Rect(x, 40, x + 245, 800), "Texto em coluna. " * 180, fontsize=9)
+a4.save(src / "colunas.pdf")
+work = Path(tempfile.mkdtemp(dir=kb.WORK_ROOT))
+_, info = kb.pdf_for_kindle(src / "colunas.pdf", work)
+ok = bool(info) and info["two_cols"] == 2 and info["pages_out"] > info["pages_in"]
+print(f"{'OK   ' if ok else 'FALHA'} colunas.pdf -> ajuste à tela: {info}")
+
+failed = not ok
 for name in ("livro.mobi", "grande.pdf", "hq.cbz"):
     work = Path(tempfile.mkdtemp(dir=kb.WORK_ROOT))
     shutil.copy(src / name, work / name)

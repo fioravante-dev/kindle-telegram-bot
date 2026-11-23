@@ -1,6 +1,6 @@
 FROM debian:trixie-slim
 RUN apt-get update \
- && apt-get install -y --no-install-recommends calibre ghostscript qpdf python3 python3-pil ca-certificates \
+ && apt-get install -y --no-install-recommends calibre ghostscript qpdf python3 python3-pil python3-pymupdf ca-certificates \
  && rm -rf /var/lib/apt/lists/*
 ENV QT_QPA_PLATFORM=offscreen LANG=C.UTF-8 PYTHONUNBUFFERED=1 DATA_DIR=/data
 WORKDIR /app

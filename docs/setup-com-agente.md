@@ -75,7 +75,8 @@ O `--logout-cloud` só precisa rodar uma vez por token. Se já foi feito, ele re
 ## 3B. Subir sem Docker
 
 ```sh
-sudo apt install -y --no-install-recommends calibre ghostscript qpdf python3-pil   # ou equivalente
+sudo apt install -y --no-install-recommends calibre ghostscript qpdf python3-pil python3-pymupdf   # ou equivalente
+# fora do Debian/Ubuntu: pip install pymupdf pillow
 ```
 
 Servidor local da Bot API (exemplo com Podman/Docker, só em localhost):
@@ -120,7 +121,8 @@ Para **cada** pessoa que vai usar:
 2. No Telegram: abrir `https://t.me/<usuario_do_bot>` → **Iniciar**.
    - O dono entra direto. Outras pessoas ficam pendentes e o dono recebe **Aprovar/Recusar**.
 3. Mandar `/kindle algo@kindle.com`.
-4. Mandar um EPUB ou PDF pequeno **como arquivo**. O bot responde ✅; o livro aparece no Kindle em alguns
+4. Mandar um EPUB ou PDF pequeno **como arquivo**. Se for um PDF em A4, o bot mostra uma prévia e pergunta
+   se ajusta à tela; mostre isso à pessoa e explique o `/pdf`. O bot responde ✅; o livro aparece no Kindle em alguns
    minutos com o Wi-Fi ligado.
    - Se não chegar: conferir a caixa de entrada do `SMTP_USER` (a Amazon manda erro ou pedido de
      confirmação para lá) e se o remetente está mesmo aprovado.
